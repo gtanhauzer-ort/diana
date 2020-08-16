@@ -7,14 +7,17 @@ using System.Web.UI.WebControls;
 
 namespace Diana
 {
-    public partial class SiteMaster : MasterPage
+    public partial class Login : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!UsuarioLogueado)
-                Response.Redirect("Login.aspx");
+
         }
 
-        public bool UsuarioLogueado { get { return Session["usuario"]!=null; } }
+        protected void btnLogin_Click(object sender, EventArgs e)
+        {
+            Session.Add("usuario", "pepepep");
+            Response.Redirect("default.aspx");
+        }
     }
 }
