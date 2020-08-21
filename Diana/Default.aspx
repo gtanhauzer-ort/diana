@@ -8,9 +8,9 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
 
-    <table id="table" data-detail-view="true">
+    <table id="table" data-detail-view="true" class="table table-striped table-borderless">
         <thead>
-            <tr class="table-info">
+            <tr>
                 <th data-field="id">ID</th>
                 <th data-field="name">Item Name</th>
                 <th data-field="price">Item Price</th>
@@ -19,8 +19,7 @@
     </table>
 
     <script>
-
-        var $table = $('#table');
+        
         var mydata =
             [
                 {
@@ -35,8 +34,32 @@
                         },
                         {
                             "id": 1,
-                            "name": "test1",
-                            "price": "$1"
+                            "name": "test2",
+                            "price": "$2",
+                            "hijo": [
+                                {
+                                    "id": 1,
+                                    "name": "test1",
+                                    "price": "$1"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "test2",
+                                    "price": "$2",
+                                    "hijo": [
+                                        {
+                                            "id": 1,
+                                            "name": "test1",
+                                            "price": "$1"
+                                        },
+                                        {
+                                            "id": 1,
+                                            "name": "test2",
+                                            "price": "$2"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -51,80 +74,61 @@
             $('#table').bootstrapTable({
                 data: mydata,
                 detailView: true,
-                onExpandRow: function (index, row, $detail) {                    
-                    expandirTabla(index, row, $detail);
+                detailFilter: function (index, row) {
+                    return row.hijo != null;
+                },
+                onExpandRow: function (index, row, $detail) {
+                    if (row.hijo != null)
+                        expandirTabla(index, row, $detail);
                 }
             });
+            $('#table')[0].classList.value = "table table-bordered";
+
         });
 
-        function expandirTabla(index, row, $detalle) {   
+        function expandirTabla(index, row, $detalle) {
             if (row.hijo != null && row.hijo.length > 0) {
                 var $el = $detalle.html('<table></table>').find('table')
                 var i; var j; var row
                 var columns = []
                 var data = []
-                var cells = 3;
                 var rows = row.hijo.length;
-                for (i = 0; i < cells; i++) {
+                var columnas = 0;
+
+                if (rows > 0) {
+                    columnas = Object.keys(row.hijo[0]);
+                }
+                else
+                    return;
+
+                for (i = 0; i < columnas.length; i++) {
                     columns.push({
-                        field: 'field' + i,
-                        title: 'Cell' + i,
+                        field: columnas[i],
+                        title: columnas[i],
                         sortable: true
                     })
                 }
+
                 for (i = 0; i < rows; i++) {
-                    row = {}
-                    for (j = 0; j < cells; j++) {
-                        row['field' + j] = row.hijo[rows];
-                    }
-                    data.push(row)
+                    var rowtmp = row.hijo[i];
+                    data.push(rowtmp)
                 }
+
                 $el.bootstrapTable({
-                    //columns: columns,
+                    columns: columns,
                     data: data,
-                    //detailView: cells > 1,
+                    detailView: true,
+                    detailFilter: function (index, row) {
+                        return row.hijo != null;
+                    },
                     onExpandRow: function (index, row, $detail) {
                         /* eslint no-use-before-define: ["error", { "functions": false }]*/
-                        expandirTabla($detail)
+                        expandirTabla(index, row, $detail)
                     }
-                })
+                })                
+                $el[0].classList.value = "table  table-bordered";
             }
-        }
-        var $table = $('#table')
-
-        function buildTable($el, cells, rows) {
-            var i; var j; var row
-            var columns = []
-            var data = []
-
-            for (i = 0; i < cells; i++) {
-                columns.push({
-                    field: 'field' + i,
-                    title: 'Cell' + i,
-                    sortable: true
-                })
-            }
-            for (i = 0; i < rows; i++) {
-                row = {}
-                for (j = 0; j < cells; j++) {
-                    row['field' + j] = 'Row-' + i + '-' + j
-                }
-                data.push(row)
-            }
-            $el.bootstrapTable({
-                columns: columns,
-                data: data,
-                detailView: cells > 1,
-                onExpandRow: function (index, row, $detail) {
-                    /* eslint no-use-before-define: ["error", { "functions": false }]*/
-                    expandTable($detail, cells - 1)
-                }
-            })
-        }
-
-        function expandTable($detail, cells) {
-            buildTable($detail.html('<table></table>').find('table'), cells, 1)
-        }
+        }        
 
     </script>
 </asp:Content>
