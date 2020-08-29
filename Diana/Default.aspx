@@ -11,64 +11,16 @@
     <table id="table" data-detail-view="true" class="table table-striped table-borderless">
         <thead>
             <tr>
-                <th data-field="id">ID</th>
-                <th data-field="name">Item Name</th>
-                <th data-field="price">Item Price</th>
+                <th data-field="Concepto">Concepto</th>
+                <th data-field="Importe" data-align="right">Importe</th>
+                <th data-field="%" data-align="right">%</th>
             </tr>
         </thead>
     </table>
 
     <script>
-        
-        var mydata =
-            [
-                {
-                    "id": 0,
-                    "name": "test0",
-                    "price": "$0",
-                    "hijo": [
-                        {
-                            "id": 1,
-                            "name": "test1",
-                            "price": "$1"
-                        },
-                        {
-                            "id": 1,
-                            "name": "test2",
-                            "price": "$2",
-                            "hijo": [
-                                {
-                                    "id": 1,
-                                    "name": "test1",
-                                    "price": "$1"
-                                },
-                                {
-                                    "id": 1,
-                                    "name": "test2",
-                                    "price": "$2",
-                                    "hijo": [
-                                        {
-                                            "id": 1,
-                                            "name": "test1",
-                                            "price": "$1"
-                                        },
-                                        {
-                                            "id": 1,
-                                            "name": "test2",
-                                            "price": "$2"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "id": 1,
-                    "name": "test1",
-                    "price": "$1"
-                }
-            ];
+
+        var mydata =<%=baseDatosJson%>;
 
         $(function () {
             $('#table').bootstrapTable({
@@ -83,7 +35,8 @@
                 }
             });
             $('#table')[0].classList.value = "table table-bordered";
-
+            if (mydata.colorEncabezado != null && mydata.colorEncabezado != "")
+                $('#table')[0].tHead.style = "background-color:" + row.colorEncabezado;
         });
 
         function expandirTabla(index, row, $detalle) {
@@ -96,7 +49,7 @@
                 var columnas = 0;
 
                 if (rows > 0) {
-                    columnas = Object.keys(row.hijo[0]);
+                    columnas = Object.keys(row.hijo[0]).filter(fila => fila != "hijo" && fila != "colorEncabezado");
                 }
                 else
                     return;
@@ -105,7 +58,8 @@
                     columns.push({
                         field: columnas[i],
                         title: columnas[i],
-                        sortable: true
+                        sortable: true,
+                        align: typeof (eval("row.hijo[i]." + columnas[i])) == "number" ? "right" : "center"
                     })
                 }
 
@@ -125,10 +79,13 @@
                         /* eslint no-use-before-define: ["error", { "functions": false }]*/
                         expandirTabla(index, row, $detail)
                     }
-                })                
+                })
                 $el[0].classList.value = "table  table-bordered";
+
+                if (row.colorEncabezado != null && row.colorEncabezado != "")
+                    $el[0].tHead.style = "background-color:" + row.colorEncabezado;
             }
-        }        
+        }
 
     </script>
 </asp:Content>
