@@ -55,11 +55,17 @@
                     return;
 
                 for (i = 0; i < columnas.length; i++) {
+                    var alineacion = "center";
+                    if (columnas[i] == "%")
+                        alineacion = "right";
+                    else
+                        alineacion = typeof (eval("row.hijo[i]." + columnas[i])) == "number" ? "right" : "center";
+
                     columns.push({
                         field: columnas[i],
                         title: columnas[i],
                         sortable: true,
-                        align: typeof (eval("row.hijo[i]." + columnas[i])) == "number" ? "right" : "center"
+                        align: alineacion
                     })
                 }
 
